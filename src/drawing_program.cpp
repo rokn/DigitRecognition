@@ -11,7 +11,7 @@ namespace recognize
 		_isDraging = false;	
 		_canvasWidth = canvasWidth;
 		_canvasHeight = canvasHeight;
-		_drawShape = new sf::CircleShape(2);
+		_drawShape = new sf::RectangleShape(sf::Vector2f(1,1));
 		_drawShape->setFillColor(sf::Color::Black);
 		_canvas = new sf::RenderTexture();
 		_canvas->create(canvasWidth, canvasHeight);
@@ -22,6 +22,7 @@ namespace recognize
 		sf::Vector2f pos(GetWindow().getSize().x/2 - canvasWidth/2,
 						GetWindow().getSize().y/2 + canvasHeight/2);
 		_canvasSprite->setPosition(pos);
+		GetView().zoom(0.05f);
 	}
 
 	DrawingProgram::~DrawingProgram()
@@ -50,12 +51,14 @@ namespace recognize
 			case sf::Event::MouseMoved:
 				if(_isDraging)
 				{
-					sf::Vector2i pos = sf::Vector2i(event.mouseMove.x - _canvasSprite->getPosition().x, (event.mouseMove.y - _canvasSprite->getPosition().y) + _canvasHeight);
-					sf::Vector2f mapped = GetWindow().mapPixelToCoords(pos);
-					_drawShape->setPosition(mapped.x, mapped.y);
+					sf::Vector2i mPos = sf::Vector2i(event.mouseMove.x, event.mouseMove.y);
+					sf::Vector2f mMapped = GetWindow().mapPixelToCoords(mPos);
+
+					mMapped.x -= _canvasSprite->getPosition().x;
+					mMapped.y += -_canvasSprite->getPosition().y + _canvasHeight;
+
+					_drawShape->setPosition(mMapped.x, mMapped.y);
 					_canvas->draw(*_drawShape);
-					std::cerr << "posX:" << _drawShape->getPosition().x
-						<< "posY:" << _drawShape->getPosition().y << std::endl;
 				}
 				break;
 			case sf::Event::KeyPressed:
@@ -70,6 +73,10 @@ namespace recognize
 				else if(event.key.code == sf::Keyboard::Subtract)
 				{
 					GetView().zoom(1.1f);
+				}
+				else if(event.key.code == sf::Keyboard::C)
+				{
+					_canvas->clear(sf::Color::White);
 				}
 				break;
 			case sf::Event::Closed:
