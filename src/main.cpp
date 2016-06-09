@@ -1,16 +1,11 @@
-#include <iostream>
-#include <SFML/Graphics.hpp>
+#include "main.h"
+#include "drawing_program.hpp"
 
-using namespace std;
+using namespace recognize;
 
 int main()
 {
-	cout << "Hello World!" << endl;
-	//sf::RenderWindow window(sf::VideoMode(200,200), "SFML works");
-
-	//while(window.isOpen())
-	//{
-	//	window.display();
-	//}
-	return 0;
+	Program *program = new DrawingProgram(800,600,"DigitRecognizer",20,20);
+	int exitCode = program->Run();
+	return exitCode;
 }

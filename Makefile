@@ -221,4 +221,4 @@ $(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
 
 
 run:
-	./bin/release/recognizer
+	./$(BIN_NAME)

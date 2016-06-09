@@ -1,7 +1,5 @@
-build/release/main.o: src/main.cpp include/main.h \
+build/release/drawing_program.o: src/drawing_program.cpp \
  include/drawing_program.hpp include/program.hpp
-
-include/main.h:
 
 include/drawing_program.hpp:
 
