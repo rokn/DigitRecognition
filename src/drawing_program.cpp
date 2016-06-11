@@ -1,6 +1,5 @@
 #include "drawing_program.hpp"
-#include "draw_command.hpp"
-#include "zoom_command.hpp"
+#include "commands.hpp"
 #include <iostream>
 
 #define ZOOM_AMOUNT 0.01
@@ -71,7 +70,7 @@ namespace recognize
 				}
 				else if(event.key.code == sf::Keyboard::C)
 				{
-					_canvas->Clear(sf::Color::White);
+					_commands.at("Clear")->Execute();
 				}
 				break;
 			case sf::Event::Closed:
@@ -96,6 +95,7 @@ namespace recognize
 		AddCommand("Draw", new DrawCommand(*_canvas));
 		AddCommand("Zoom", new ZoomCommand(GetView(), 1.0 - ZOOM_AMOUNT));
 		AddCommand("ZoomOut", new ZoomCommand(GetView(), 1.0 + ZOOM_AMOUNT));
+		AddCommand("Clear", new ClearCommand(*_canvas, sf::Color::White));
 	}
 
 	void DrawingProgram::AddCommand(const std::string& name, Command* command)
