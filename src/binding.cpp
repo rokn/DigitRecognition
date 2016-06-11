@@ -28,6 +28,7 @@ namespace recognize
 		}
 	}
 
+
 	bool Binding::CheckAllKeysPressed() const
 	{
 		bool allPressed = true;

@@ -14,16 +14,16 @@ namespace recognize
 
 		_canvas = new Canvas(canvasWidth, canvasHeight, GetWindow());
 
+		//Init drawing shape
 		sf::Shape* _drawShape = new sf::RectangleShape(sf::Vector2f(1,1));
 		_drawShape->setFillColor(sf::Color::Black);
-
 		_canvas->SetShape(_drawShape);
 
 		sf::Vector2f pos(GetWindow().getSize().x/2 - canvasWidth/2,
 						GetWindow().getSize().y/2 - canvasHeight/2);
-		_canvas->setPosition(pos);
+		_canvas->setPosition(pos); // Center the canvas
 
-		GetView().zoom(0.05f);
+		GetView().zoom((float)canvasHeight / (float)windowHeight); //Initial zoom
 
 		InitCommands();
 		InitBindings();
@@ -114,6 +114,7 @@ namespace recognize
 
 		currBindingKeys.clear();
 		currBindingKeys.push_back(sf::Keyboard::C);
+		currBindingKeys.push_back(sf::Keyboard::LControl);
 		_bindingManager->AddBindng(currBindingKeys, _commands.at("Clear"));
 
 		currBindingKeys.clear();
