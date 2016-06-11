@@ -18,6 +18,7 @@ namespace recognize
 			void DrawShape(sf::Vector2f position);
 
 			void Clear(sf::Color clearColor = sf::Color::White);
+			void GetPixels(int& pixelsCount, sf::Image* pixels) const;
 		private:
 			int _canvasWidth;
 			int _canvasHeight;

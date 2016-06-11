@@ -63,5 +63,11 @@ namespace recognize
 	{
 		_canvas->clear(clearColor);
 	}
+
+	void Canvas::GetPixels(int& pixelsCount, sf::Image* pixels) const
+	{
+		pixelsCount = _canvas->getSize().x * _canvas->getSize().y;
+		*pixels = _canvas->getTexture().copyToImage();
+	}
 }
 
