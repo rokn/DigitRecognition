@@ -5,6 +5,7 @@
 #include "canvas.hpp"
 #include "command.hpp"
 #include <map>
+#include "binding_manager.hpp"
 
 namespace recognize
 {
@@ -15,7 +16,7 @@ namespace recognize
 					int canvasWidth, int canvasHeight);
 			~DrawingProgram();
 
-			void HandleEvent(sf::Event& event);
+			void HandleEvent(sf::Event& event, bool& consumed);
 			void Update(float deltaTime);
 			void Draw(sf::RenderWindow& window);
 
@@ -23,8 +24,10 @@ namespace recognize
 			bool _isDraging;
 			Canvas* _canvas;
 			std::map<std::string, Command*> _commands;
+			BindingManager* _bindingManager;
 
 			void InitCommands();
+			void InitBindings();
 			void AddCommand(const std::string& name, Command* command);
 	};
 }

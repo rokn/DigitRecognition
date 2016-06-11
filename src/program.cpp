@@ -4,11 +4,11 @@ namespace recognize
 {
 	Program::Program(int windowWidth, int windowHeight, const std::string& name)
 	{
-		_window = new sf::RenderWindow(sf::VideoMode(windowWidth,windowHeight),name); 
+		_window = new sf::RenderWindow(sf::VideoMode(windowWidth,windowHeight),name);
 		_mainView = new sf::View(sf::FloatRect(0,0,windowWidth,windowHeight));
 		_window->setView(*_mainView);
 	}
-	
+
 	Program::~Program()
 	{
 		delete _window;
@@ -18,6 +18,7 @@ namespace recognize
 	int Program::Run()
 	{
 		int deltaTime = 0.0f;
+		bool eventConsumed;
 		sf::Event currEvent;
 		_exit = false;
 
@@ -25,7 +26,8 @@ namespace recognize
 		{
 			while(_window->pollEvent(currEvent))
 			{
-				HandleEvent(currEvent);
+				eventConsumed = false;
+				HandleEvent(currEvent, eventConsumed);
 			}
 
 			Update(deltaTime);

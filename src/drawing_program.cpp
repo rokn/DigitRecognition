@@ -26,14 +26,20 @@ namespace recognize
 		GetView().zoom(0.05f);
 
 		InitCommands();
+		InitBindings();
 	}
 
 	DrawingProgram::~DrawingProgram()
 	{
 		delete _canvas;
+
+		for(auto& kvp : _commands)
+		{
+			delete kvp.second;
+		}
 	}
 
-	void DrawingProgram::HandleEvent(sf::Event& event)
+	void DrawingProgram::HandleEvent(sf::Event& event, bool& consumed)
 	{
 		switch(event.type)
 		{
@@ -41,43 +47,31 @@ namespace recognize
 				if(event.mouseButton.button == sf::Mouse::Left)
 				{
 					_isDraging = true;
+					consumed = true;
 				}
 				break;
 			case sf::Event::MouseButtonReleased:
 				if(event.mouseButton.button == sf::Mouse::Left)
 				{
 					_isDraging = false;
+					consumed = true;
 				}
 				break;
 			case sf::Event::MouseMoved:
 				if(_isDraging)
 				{
 					_commands.at("Draw")->Execute();
-				}
-				break;
-			case sf::Event::KeyPressed:
-				if(event.key.code == sf::Keyboard::Escape)
-				{
-					Exit(0);
-				}
-				else if(event.key.code == sf::Keyboard::Add)
-				{
-					_commands.at("Zoom")->Execute();
-				}
-				else if(event.key.code == sf::Keyboard::Subtract)
-				{
-					_commands.at("ZoomOut")->Execute();
-				}
-				else if(event.key.code == sf::Keyboard::C)
-				{
-					_commands.at("Clear")->Execute();
+					consumed = true;
 				}
 				break;
 			case sf::Event::Closed:
-				Exit(0);
+				_commands.at("Exit")->Execute();
+				consumed = true;
 				break;
 			default:break;
 		}
+
+		_bindingManager->HandleEvent(event, consumed);
 	}
 
 	void DrawingProgram::Update(float deltaTime)
@@ -96,11 +90,36 @@ namespace recognize
 		AddCommand("Zoom", new ZoomCommand(GetView(), 1.0 - ZOOM_AMOUNT));
 		AddCommand("ZoomOut", new ZoomCommand(GetView(), 1.0 + ZOOM_AMOUNT));
 		AddCommand("Clear", new ClearCommand(*_canvas, sf::Color::White));
+		AddCommand("Exit", new ExitCommand(this));
 	}
 
 	void DrawingProgram::AddCommand(const std::string& name, Command* command)
 	{
 		_commands.insert(std::pair<std::string, Command*>(name, command));
+	}
+
+	void DrawingProgram::InitBindings()
+	{
+		_bindingManager = new BindingManager();
+
+		std::vector<sf::Keyboard::Key> currBindingKeys;
+
+		currBindingKeys.clear();
+		currBindingKeys.push_back(sf::Keyboard::Add);
+		_bindingManager->AddBindng(currBindingKeys, _commands.at("Zoom"));
+
+		currBindingKeys.clear();
+		currBindingKeys.push_back(sf::Keyboard::Subtract);
+		_bindingManager->AddBindng(currBindingKeys, _commands.at("ZoomOut"));
+
+		currBindingKeys.clear();
+		currBindingKeys.push_back(sf::Keyboard::C);
+		_bindingManager->AddBindng(currBindingKeys, _commands.at("Clear"));
+
+		currBindingKeys.clear();
+		currBindingKeys.push_back(sf::Keyboard::Escape);
+		_bindingManager->AddBindng(currBindingKeys, _commands.at("Exit"));
+
 	}
 }
 
