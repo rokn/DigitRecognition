@@ -2,6 +2,9 @@
 #define DRAWING_PROGRAM_HPP
 
 #include "program.hpp"
+#include "canvas.hpp"
+#include "command.hpp"
+#include <map>
 
 namespace recognize
 {
@@ -18,12 +21,11 @@ namespace recognize
 
 		private:
 			bool _isDraging;
-			int _canvasWidth;
-			int _canvasHeight;
-			sf::Shape *_drawShape;
-			sf::RenderTexture *_canvas;
-			sf::Sprite *_canvasSprite;
+			Canvas* _canvas;
+			std::map<std::string, Command*> _commands;
 
+			void InitCommands();
+			void AddCommand(const std::string& name, Command* command);
 	};
 }
 #endif //DRAWING_PROGRAM_HPP

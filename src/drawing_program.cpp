@@ -1,35 +1,37 @@
 #include "drawing_program.hpp"
+#include "draw_command.hpp"
+#include "zoom_command.hpp"
 #include <iostream>
+
+#define ZOOM_AMOUNT 0.01
 
 namespace recognize
 {
-	
 	DrawingProgram::DrawingProgram(int windowWidth, int windowHeight, const std::string& name,
-			int canvasWidth, int canvasHeight):
-		Program(windowWidth,windowHeight,name)
+			int canvasWidth, int canvasHeight)
+	:	Program(windowWidth,windowHeight,name)
 	{
-		_isDraging = false;	
-		_canvasWidth = canvasWidth;
-		_canvasHeight = canvasHeight;
-		_drawShape = new sf::RectangleShape(sf::Vector2f(1,1));
+		_isDraging = false;
+
+		_canvas = new Canvas(canvasWidth, canvasHeight, GetWindow());
+
+		sf::Shape* _drawShape = new sf::RectangleShape(sf::Vector2f(1,1));
 		_drawShape->setFillColor(sf::Color::Black);
-		_canvas = new sf::RenderTexture();
-		_canvas->create(canvasWidth, canvasHeight);
-		_canvas->clear(sf::Color::White);
-		_canvasSprite = new sf::Sprite();
-		_canvasSprite->setTexture(_canvas->getTexture());
-		_canvasSprite->setScale(1.0f, -1.0f);
+
+		_canvas->SetShape(_drawShape);
+
 		sf::Vector2f pos(GetWindow().getSize().x/2 - canvasWidth/2,
-						GetWindow().getSize().y/2 + canvasHeight/2);
-		_canvasSprite->setPosition(pos);
+						GetWindow().getSize().y/2 - canvasHeight/2);
+		_canvas->setPosition(pos);
+
 		GetView().zoom(0.05f);
+
+		InitCommands();
 	}
 
 	DrawingProgram::~DrawingProgram()
 	{
-		delete _drawShape;
 		delete _canvas;
-		delete _canvasSprite;
 	}
 
 	void DrawingProgram::HandleEvent(sf::Event& event)
@@ -51,14 +53,7 @@ namespace recognize
 			case sf::Event::MouseMoved:
 				if(_isDraging)
 				{
-					sf::Vector2i mPos = sf::Vector2i(event.mouseMove.x, event.mouseMove.y);
-					sf::Vector2f mMapped = GetWindow().mapPixelToCoords(mPos);
-
-					mMapped.x -= _canvasSprite->getPosition().x;
-					mMapped.y += -_canvasSprite->getPosition().y + _canvasHeight;
-
-					_drawShape->setPosition(mMapped.x, mMapped.y);
-					_canvas->draw(*_drawShape);
+					_commands.at("Draw")->Execute();
 				}
 				break;
 			case sf::Event::KeyPressed:
@@ -68,15 +63,15 @@ namespace recognize
 				}
 				else if(event.key.code == sf::Keyboard::Add)
 				{
-					GetView().zoom(0.9f);
+					_commands.at("Zoom")->Execute();
 				}
 				else if(event.key.code == sf::Keyboard::Subtract)
 				{
-					GetView().zoom(1.1f);
+					_commands.at("ZoomOut")->Execute();
 				}
 				else if(event.key.code == sf::Keyboard::C)
 				{
-					_canvas->clear(sf::Color::White);
+					_canvas->Clear(sf::Color::White);
 				}
 				break;
 			case sf::Event::Closed:
@@ -93,7 +88,19 @@ namespace recognize
 
 	void DrawingProgram::Draw(sf::RenderWindow& window)
 	{
-		window.draw(*_canvasSprite);
+		window.draw(*_canvas);
+	}
+
+	void DrawingProgram::InitCommands()
+	{
+		AddCommand("Draw", new DrawCommand(*_canvas));
+		AddCommand("Zoom", new ZoomCommand(GetView(), 1.0 - ZOOM_AMOUNT));
+		AddCommand("ZoomOut", new ZoomCommand(GetView(), 1.0 + ZOOM_AMOUNT));
+	}
+
+	void DrawingProgram::AddCommand(const std::string& name, Command* command)
+	{
+		_commands.insert(std::pair<std::string, Command*>(name, command));
 	}
 }
 
