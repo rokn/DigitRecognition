@@ -13,7 +13,8 @@ namespace recognize
 			NeuralNet(std::vector<int> layers);
 			NeuralNet(std::vector<int> layers, ActivationFunction* aFunc);
 
-			arma::vec Predict(arma::vec inputLayer);
+			arma::mat Predict(arma::mat inputLayer);
+			double CostFunction(arma::mat input, arma::mat expected);
 		private:
 			ActivationFunction* _activationFunction;
 			std::vector<arma::mat> _weights;
