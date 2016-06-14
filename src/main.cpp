@@ -20,7 +20,7 @@ int main()
 	arma::mat input(5, 4, arma::fill::randu);
 	arma::mat expected(5, 10, arma::fill::randu);
 	NeuralNet net(layers, new SigmoidActivation());
-	double cost = net.CostFunction(input, expected);
+	double cost = net.CostFunction(input, expected, 1.0);
 	input.print("Input: ");
 	expected.print("Expected: ");
 	std::cout << cost << std::endl;
