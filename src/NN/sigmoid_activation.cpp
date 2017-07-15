@@ -7,5 +7,11 @@ namespace recognize
 	{
 		return 1 / (1 + exp(-input));
 	}
+
+	double SigmoidActivation::Gradient(double input)
+	{
+		double activation = Activate(input);
+		return activation * (1 - activation);
+	}
 }
 

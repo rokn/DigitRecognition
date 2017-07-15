@@ -9,6 +9,7 @@ namespace recognize
 	{
 		public:
 			double Activate(double input);
+			double Gradient(double input);
 	};
 }
 

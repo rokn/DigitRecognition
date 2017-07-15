@@ -7,6 +7,7 @@ namespace recognize
 	{
 		public:
 			virtual double Activate(double input) = 0;
+			virtual double Gradient(double input) = 0;
 	};
 }
 

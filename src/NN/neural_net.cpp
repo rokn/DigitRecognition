@@ -70,7 +70,46 @@ namespace recognize
 
 	arma::vec NeuralNet::CalcGradient(arma::mat input, arma::mat expected, double lambda)
 	{
-		//int m = input.n_rows;
+		int m = input.n_rows;
+		std::vector<arma::mat> gradients(_numLayers - 1);
+
+		for(unsigned int i = 0; i < _numLayers - 1; i++)
+		{
+			gradients.push_back(arma::zeros<arma::mat>(arma::size(_weights[i])));
+		}
+
+		if(_activationFunction == nullptr)
+		{
+			std::cerr << "No activation function set" << std::endl;
+			return arma::vec();
+		}
+
+		std::vector<arma::mat> outputs;
+		arma::mat curr = input;
+
+		for(unsigned int i = 0; i < _numLayers - 1; i++)
+		{
+			curr.insert_cols(0, arma::ones<arma::vec>(curr.n_rows));
+			curr = curr * _weights[i].t();
+			outputs.push_back(curr);
+			curr.for_each([&](double& val) { val = _activationFunction->Activate(val); });
+		}
+
+		for(unsigned int i = 0; i < m; i++)
+		{
+			arma::mat curr = (outputs[outputs.size()-1].row(i) - expected.row(i)).t();
+
+			for(int j = _numLayers - 2; j  >= 0; j--)
+			{
+				gradients[j] += curr * input.row(i);
+
+				
+
+				curr = _weights[j].cols(2, _weights[j].n_cols - 1).t() 
+						* (curr % 
+			}
+		}
+
 	}
 }
 
